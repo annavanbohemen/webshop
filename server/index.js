@@ -1,8 +1,8 @@
 const express = require('express')
 const app = express()
-
-var Sequelize = require('sequelize')
-var sequelize = new Sequelize('postgres://postgres:secret@localhost:5432/postgres')
+const bodyParser = require('body-parser')
+const Sequelize = require('sequelize')
+const sequelize = new Sequelize('postgres://postgres:secret@localhost:5432/postgres')
 
 app.listen(4001, () => console.log('Express API listening on port 4001'))
 
@@ -12,6 +12,8 @@ app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE')
   next()
 })
+
+app.use(bodyParser.json())
 
 const Product = sequelize.define('product', {
   name: {
@@ -71,6 +73,58 @@ app.get('/products/:id', (request, response) => {
 app.post('/products', (request, response) => {
   const product = request.body
   console.log(product)
-  // ... insert the new data into our database
-  response.end()
+
+  Product.create(product)
+  .then(newProduct => {
+    response.status(201).send(newProduct)
+  })
+  .catch(err => {
+    response.status(500).send({
+      message: 'something is really wrong!'
+    })
+})
+})
+
+app.put('/products/:id', (request, response) => {
+  const productId = Number(request.params.id)
+  const updates = request.body
+
+  Product.findById(productId)
+  .then(product => {
+    product.update(updates)
+
+      .then(updatedProduct => {
+        response.send(updatedProduct)
+      })
+      .catch(err => {
+        response.status(404).send({
+          message: 'Product not found!'
+        })
+      })
+    .catch(err => {
+      response.status(500).send({
+      message: 'something is really wrong!'
+      })
+    })
+  })
+})
+
+app.delete('/products/:id', (req, res) => {
+  const productId = Number(req.params.id)
+
+  Product.findById(productId)
+	  .then(entity => {
+	    return entity.destroy()
+	  })
+	  .then(_ => {
+	    res.send({
+	      message: 'The product was deleted succesfully'
+	    })
+	  })
+	  .catch(error => {
+	    res.status(500).send({
+	      message: `Something went wrong`,
+	      error
+	    })
+	  })
 })
