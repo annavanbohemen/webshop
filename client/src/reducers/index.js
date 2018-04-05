@@ -1,3 +1,5 @@
 import products from './products'
+import product from './product'
 
-export default {products}
+export default {
+  products, product}

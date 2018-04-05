@@ -1,6 +1,8 @@
 import {connect} from 'react-redux'
 import React, {PureComponent} from 'react'
 import PropTypes from 'prop-types'
+import { fetchAllProducts } from '../actions/products'
+import {Link} from 'react-router-dom'
 
 class ProductsList extends PureComponent {
   static propTypes = {
@@ -10,6 +12,9 @@ class ProductsList extends PureComponent {
       price: PropTypes.number.isRequired
     })).isRequired
   }
+  componentWillMount() {
+ this.props.fetchAllProducts()
+}
 
   render() {
     const {products} = this.props
@@ -28,7 +33,9 @@ class ProductsList extends PureComponent {
           <tbody>
             { products.map(product => (<tr key={product.id}>
               <td>{product.id}</td>
-              <td>{product.name}</td>
+              <td>
+              <Link to={ `/products/${product.id}` }>{product.name}</Link>
+              </td>
               <td>&euro; {product.price}.00</td>
             </tr>)) }
           </tbody>
@@ -44,4 +51,4 @@ const mapStateToProps = function (state) {
   }
 }
 
-export default connect(mapStateToProps)(ProductsList)
+export default connect(mapStateToProps, { fetchAllProducts })(ProductsList)

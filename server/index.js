@@ -37,8 +37,8 @@ app.get('/products', (request, response) => {
   Product.findAll({
     attributes: ['id', 'name', 'price']
   })
-    .then(result => {
-      response.send(result)
+    .then(products => {
+      response.send({products})
     })
     .catch(err => {
       response.status(500).send({
@@ -66,4 +66,11 @@ app.get('/products/:id', (request, response) => {
       message: 'something is really wrong!'
     })
   })
+})
+
+app.post('/products', (request, response) => {
+  const product = request.body
+  console.log(product)
+  // ... insert the new data into our database
+  response.end()
 })
