@@ -3,6 +3,7 @@ const Product = require('./model')
 const bodyParser = require('body-parser')
 const router = new Router()
 
+
 router.use(bodyParser.json())
 
 router.get('/products', (request, response) => {

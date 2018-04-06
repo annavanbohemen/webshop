@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 const productsRouter = require('./products/router')
 const usersRouter = require('./users/router')
+const loginsRouter = require('./logins/router')
 
 app.listen(4001, () => console.log('Express API listening on port 4001'))
 
@@ -14,3 +15,4 @@ app.use(function(req, res, next) {
 
 app.use(productsRouter)
 app.use(usersRouter)
+app.use(loginsRouter)
