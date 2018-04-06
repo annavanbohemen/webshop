@@ -6,6 +6,13 @@ const router = new Router()
 
 router.use(bodyParser.json())
 
+const requireUser = (request, response, next) => {
+if (request.user) next()
+else response.status(401).send({
+  message: 'Please login'
+})
+}
+
 router.get('/products', (request, response) => {
 
   Product.findAll({
@@ -42,9 +49,8 @@ router.get('/products/:id', (request, response) => {
   })
 })
 
-router.post('/products', (request, response) => {
+router.post('/products', requireUser, (request, response) => {
   const product = request.body
-  console.log(product)
 
   Product.create(product)
   .then(newProduct => {
@@ -57,7 +63,7 @@ router.post('/products', (request, response) => {
 })
 })
 
-router.put('/products/:id', (request, response) => {
+router.put('/products/:id', requireUser, (request, response) => {
   const productId = Number(request.params.id)
   const updates = request.body
 
@@ -81,7 +87,7 @@ router.put('/products/:id', (request, response) => {
   })
 })
 
-router.delete('/products/:id', (req, res) => {
+router.delete('/products/:id', requireUser, (req, res) => {
   const productId = Number(req.params.id)
 
   Product.findById(productId)

@@ -23,4 +23,17 @@ router.post('/users', (req, res) => {
   })
 })
 
+router.get('/secret', (req, res) => {
+	if (req.user) {
+		res.send({
+			message: `Welcome, you should be the user with email ${req.user.email}`
+		})
+	}
+	else {
+		res.status(401).send({
+			message: 'Please login!'
+		})
+	}
+})
+
 module.exports = router
