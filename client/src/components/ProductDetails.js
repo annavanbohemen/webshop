@@ -1,32 +1,50 @@
-import {connect} from 'react-redux'
 import React, {PureComponent} from 'react'
-import PropTypes from 'prop-types'
-import { fetchProduct } from '../actions/products'
+import {connect} from 'react-redux'
+import {fetchProduct, updateProduct} from '../actions/products'
+import ProductForm from './ProductForm'
 
 class ProductDetails extends PureComponent {
-  static propTypes = {
-    products: PropTypes.arrayOf(PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      name: PropTypes.string.isRequired,
-      price: PropTypes.number.isRequired,
-      description: PropTypes.string.isRequired,
-      image: PropTypes.string.isRequired
-    })).isRequired
+  state = {
+    edit: false
   }
- componentWillMount(props) {
-  this.props.fetchProduct(this.props.match.params.id)
-}
+
+  toggleEdit = () => {
+    this.setState({
+      edit: !this.state.edit
+    })
+  }
+
+  componentWillMount(props) {
+    this.props.fetchProduct(this.props.match.params.id)
+  }
+
+  updateProduct = (product) => {
+    this.props.updateProduct(this.props.match.params.id, product)
+    this.toggleEdit()
+  }
 
   render() {
     const {product} = this.props
     if (!product) return null
+
     return (
       <div>
-        <h1>{ product.name }</h1>
-        <p> &euro; { product.price }.00</p>
-        <img src={product.image} alt=""/>
-        <p> { product.description } </p>
-        <button>Buy this product</button>
+        {
+          this.state.edit &&
+          <ProductForm initialValues={product} onSubmit={this.updateProduct} />
+        }
+
+        {
+          !this.state.edit &&
+          <div>
+            <button onClick={ this.toggleEdit }>edit</button>
+            <h1>{ product.name }</h1>
+            <p> &euro; { product.price }.00</p>
+            <img src={product.image} alt=""/>
+            <p> { product.description } </p>
+            <button>Buy this product</button>
+          </div>
+        }
       </div>
     )
   }
@@ -38,4 +56,4 @@ const mapStateToProps = function (state, props) {
   }
 }
 
-export default connect(mapStateToProps, { fetchProduct })(ProductDetails)
+export default connect(mapStateToProps, {fetchProduct, updateProduct})(ProductDetails)
