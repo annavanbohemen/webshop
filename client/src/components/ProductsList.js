@@ -25,6 +25,7 @@ createProduct = (product) => {
 
   render() {
     const {products} = this.props
+    const {currentUser} = this.props
     return (
       <div>
         <h1>All products</h1>
@@ -44,13 +45,16 @@ createProduct = (product) => {
               <Link to={ `/products/${product.id}` }>{product.name}</Link>
               </td>
               <td>&euro; {product.price}.00</td>
-              <td><button onClick={ () => this.deleteProduct(product.id) }>remove product</button></td>
+              { currentUser && <td><button onClick={ () => this.deleteProduct(product.id) }>remove product</button></td> }
             </tr>)) }
           </tbody>
 				</table>
-          <h1>Create a new product</h1>
 
-          <ProductForm onSubmit={this.createProduct} />
+        { !currentUser && <p>Please <Link to="/login">login</Link></p>}
+        { currentUser && <h1>Create a new product</h1>}
+
+        { currentUser && <ProductForm onSubmit={this.createProduct} /> }
+
       </div>
     )
   }
@@ -58,7 +62,8 @@ createProduct = (product) => {
 
 const mapStateToProps = function (state) {
   return {
-    products: state.products
+    products: state.products,
+    currentUser: state.currentUser
   }
 }
 
